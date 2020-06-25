@@ -3,16 +3,20 @@ const net = require('net')
 const server = net.createServer()
 
 server.on('connection', (socket) => {
-  const address = `${socket.remoteAddress} : ${socket.remotePort}`
-  console.log('Connection Estabilished on ', address)
+  const remoteAddress = `${socket.remoteAddress} : ${socket.remotePort}`
+  console.log('New client connected on ', remoteAddress)
 
   socket.on('data', (data) => {
-    console.log(data + ' recieved from client')
+    console.log(data + 'recieved from client')
     socket.write(`Server Reply : ${data}`)
   })
 
-  socket.on('end', () => {
-    console.log('Connection closed')
+  socket.once('close', () => {
+    console.log(`Connection from ${remoteAddress} closed`)
+  })
+
+  socket.on('error', (err) => {
+    console.log(`Some error occurred: ${err.message}`)
   })
 })
 
