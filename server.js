@@ -7,7 +7,7 @@ server.on('connection', (socket) => {
   console.log('New client connected on ', remoteAddress)
 
   socket.on('data', (data) => {
-    console.log(data + 'recieved from client')
+    console.log(data.toString())
     socket.write(`Server Reply : ${data}`)
   })
 
