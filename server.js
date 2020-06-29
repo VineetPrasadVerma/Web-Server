@@ -1,34 +1,22 @@
 const net = require('net')
+const { requestParser } = require('./requestParser')
+const { response } = require('./response')
 
 const server = net.createServer()
 
-const requestObject = {}
 server.on('connection', (socket) => {
   const remoteAddress = `${socket.remoteAddress} : ${socket.remotePort}`
   console.log('New client connected on ', remoteAddress)
 
-  socket.on('data', (data) => {
-    const request = data.toString().split(/\r\n/)
-    console.log(request)
-    const requestLine = request[0]
-
-    const [method, requestUri, version] = requestLine.split(' ')
-    requestObject.method = method
-    requestObject.requestUri = requestUri
-    requestObject.version = version
-
-    const headers = {}
-    for(let i=1; i<request.length-2; i++){
-      const [headerType, headerValue] = request[i].split(':')
-      headers[headerType] = headerValue
-    }
-
-    requestObject.headers = headers
-
-    requestObject.body = request[request.length - 1]
-
+  socket.on('data', async (data) => {
+    // Request
+    const requestObject = requestParser(data)
     console.log(requestObject)
-    socket.write(`Server Reply : ${data}`)
+
+    // Response
+    const res = await response(requestObject)
+    console.log(res)
+    socket.write(res)
   })
 
   socket.once('close', () => {
