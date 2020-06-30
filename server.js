@@ -1,6 +1,6 @@
 const net = require('net')
 const { requestParser } = require('./requestParser')
-const { response } = require('./response')
+const { createResponse } = require('./serveStaticFile')
 
 const server = net.createServer()
 
@@ -14,7 +14,7 @@ server.on('connection', (socket) => {
     console.log(requestObject)
 
     // Response
-    const res = await response(requestObject)
+    const res = await createResponse(requestObject)
     console.log(res)
     socket.write(res)
   })

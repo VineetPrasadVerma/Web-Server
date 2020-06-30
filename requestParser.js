@@ -11,7 +11,7 @@ const requestParser = (data) => {
 
   const headers = {}
   for (let i = 1; i < request.length - 2; i++) {
-    const [headerType, headerValue] = request[i].split(':')
+    const [headerType, headerValue] = request[i].split(': ')
     headers[headerType] = headerValue
   }
 
