@@ -6,7 +6,19 @@ const requestParser = (data) => {
 
   const [method, requestUri, version] = requestLine.split(' ')
   requestObject.method = method
-  requestObject.requestUri = requestUri
+  requestObject.requestUri = requestUri.split('?')[0]
+
+  const queryString = requestUri.split('?')[1]
+  if (queryString) {
+    const queryParamsArray = queryString.split('&')
+    const queryParams = {}
+    for (const item of queryParamsArray) {
+      const [key, value] = item.split('=')
+      queryParams[key] = value
+    }
+    requestObject.queryParams = queryParams
+  }
+
   requestObject.version = version
 
   const headers = {}
