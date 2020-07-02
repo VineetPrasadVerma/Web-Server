@@ -1,8 +1,24 @@
 const net = require('net')
 const { requestParser } = require('./requestParser')
-const { createResponse } = require('./serveStaticFile')
+const { serveStaticFile } = require('./staticHandler')
+const { routeHandler } = require('./routeHandler')
+const { errorResponse } = require('./errorResponse')
 
 const server = net.createServer()
+
+const routes = {
+  GET: {
+    '/tasks': (req, res) => {
+      console.log(req.params)
+    },
+    '/tasks/:id/subtasks/:id2': (req, res) => {
+      console.log(req.params)
+    }
+  },
+  POST: {},
+  PUT: {},
+  DELETE: {}
+}
 
 server.on('connection', (socket) => {
   const remoteAddress = `${socket.remoteAddress} : ${socket.remotePort}`
@@ -14,7 +30,14 @@ server.on('connection', (socket) => {
     console.log(requestObject)
 
     // Response
-    const res = await createResponse(requestObject)
+    let res = await serveStaticFile(requestObject)
+    if (!res) {
+      res = await routeHandler(requestObject, routes)
+      if (!res) {
+        res = errorResponse()
+      }
+    }
+
     console.log(res)
     socket.write(res)
   })
