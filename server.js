@@ -7,14 +7,7 @@ const { errorResponse } = require('./errorResponse')
 const server = net.createServer()
 
 const routes = {
-  GET: {
-    '/tasks': (req, res) => {
-      console.log(req.params)
-    },
-    '/tasks/:id/subtasks/:id2': (req, res) => {
-      console.log(req.params)
-    }
-  },
+  GET: {},
   POST: {},
   PUT: {},
   DELETE: {}
@@ -34,7 +27,7 @@ server.on('connection', (socket) => {
     if (!res) {
       res = await routeHandler(requestObject, routes)
       if (!res) {
-        res = errorResponse()
+        res = await errorResponse()
       }
     }
 
@@ -51,6 +44,28 @@ server.on('connection', (socket) => {
   })
 })
 
-server.listen(8000, () => {
-  console.log('server is listening on port 8000')
-})
+const app = {
+  listen: (port) => {
+    server.listen(port, () => {
+      console.log('server is listening on port 8000')
+    })
+  },
+
+  get: (path, handler) => {
+    Object.assign(routes.GET, { [path]: handler })
+  },
+
+  post: (path, handler) => {
+    Object.assign(routes.POST, { [path]: handler })
+  },
+
+  put: (path, handler) => {
+    Object.assign(routes.PUT, { [path]: handler })
+  },
+
+  delete: (path, handler) => {
+    Object.assign(routes.DELETE, { [path]: handler })
+  }
+}
+
+module.exports = { app }

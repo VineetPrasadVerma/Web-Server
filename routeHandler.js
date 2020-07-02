@@ -11,7 +11,7 @@ const routeHandler = (reqObj, routes) => {
     routePath = route.split('/').slice(1)
 
     for (const index in requestUriPath) {
-      if ((routePath[index] !== undefined) && routePath[index].startsWith(':')) {
+      if (routePath[index] !== undefined && routePath[index].startsWith(':')) {
         reqObj.params[routePath[index].slice(1)] = requestUriPath[index]
       } else {
         if (routePath[index] !== requestUriPath[index]) {
@@ -21,17 +21,29 @@ const routeHandler = (reqObj, routes) => {
       }
     }
 
-    if (!flag && (requestUriPath.length === routePath.length)) {
-      let res =
-      'HTTP/1.1 200 OK\r\nAccess-Control-Allow-Origin: *\r\nAccess-Control-Allow-Headers: Origin, Content-Type, Accept\r\n'
-      const date = new Date()
-      res += `Date: ${date.toUTCString()}\r\n`
-      res += 'Content-Type: *\r\n'
-      const body = 'Vineet'
-      res += `Content-Length: ${2 + 3}\r\n\r\n`
-      res += body
+    if (!flag && requestUriPath.length === routePath.length) {
+      const respObj = {}
 
-      return res
+      respObj.status = (code) => {
+        let resp =
+          `HTTP/1.1 ${code} OK\r\nAccess-Control-Allow-Origin: *\r\nAccess-Control-Allow-Headers: Origin, Content-Type, Accept\r\n`
+        const date = new Date()
+        resp += `Date: ${date.toUTCString()}\r\n`
+        resp += 'Content-Type: *\r\n'
+
+        respObj.resp = resp
+        return respObj
+      }
+
+      respObj.send = (body) => {
+        respObj.resp += `Content-Length: ${body.length}\r\n\r\n`
+        respObj.resp += body
+
+        return respObj
+      }
+
+      routes[reqObj.method][route](reqObj, respObj)
+      return respObj.resp
     }
   }
 
