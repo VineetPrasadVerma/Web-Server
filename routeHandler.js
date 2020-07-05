@@ -1,5 +1,10 @@
-const routeHandler = (reqObj, routes) => {
+const routeHandler = async (reqObj, routes, middlewares) => {
   reqObj.params = {}
+
+  for (const middleware of middlewares) {
+    const result = await middleware(reqObj, {}, () => {})
+    if (result) return result
+  }
 
   const requestUriPath = reqObj.requestUri.split('/').slice(1)
   const methodRoutes = routes[reqObj.method]

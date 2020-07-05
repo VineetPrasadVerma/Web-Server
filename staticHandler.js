@@ -11,7 +11,7 @@ const contentType = {
   png: 'image/png'
 }
 
-const serveStaticFile = async (requestObj) => {
+const serveStaticFile = async (requestObj, respObj) => {
   let res = null
   try {
     if (requestObj.method === 'GET') {

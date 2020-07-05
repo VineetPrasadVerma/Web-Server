@@ -1,6 +1,5 @@
 const net = require('net')
 const { requestParser } = require('./requestParser')
-const { serveStaticFile } = require('./staticHandler')
 const { routeHandler } = require('./routeHandler')
 const { errorResponse } = require('./errorResponse')
 
@@ -13,6 +12,7 @@ const routes = {
   DELETE: {}
 }
 
+const middlewares = []
 server.on('connection', (socket) => {
   const remoteAddress = `${socket.remoteAddress} : ${socket.remotePort}`
   console.log('New client connected on ', remoteAddress)
@@ -20,17 +20,21 @@ server.on('connection', (socket) => {
   socket.on('data', async (data) => {
     // Request
     const requestObject = requestParser(data)
-    console.log(requestObject)
-
     // Response
-    let res = await serveStaticFile(requestObject)
+    // let res = await serveStaticFile(requestObject)
+    // if (!res) {
+    //   res = await routeHandler(requestObject, routes, middlewares)
+    //   if (!res) {
+    //     res = await errorResponse()
+    //   }
+    // }
+
+    let res = await routeHandler(requestObject, routes, middlewares)
     if (!res) {
-      res = await routeHandler(requestObject, routes)
-      if (!res) {
-        res = await errorResponse()
-      }
+      res = await errorResponse()
     }
 
+    console.log(requestObject)
     console.log(res)
     socket.write(res)
   })
@@ -49,6 +53,10 @@ const app = {
     server.listen(port, () => {
       console.log('server is listening on port 8000')
     })
+  },
+
+  use: (middleware) => {
+    middlewares.push(middleware)
   },
 
   get: (path, handler) => {
