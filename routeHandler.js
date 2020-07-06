@@ -41,13 +41,18 @@ const routeHandler = async (reqObj, routes, middlewares) => {
       }
 
       respObj.send = (body) => {
+        body = JSON.stringify(body)
+        console.log('Route Hander', body)
         respObj.resp += `Content-Length: ${body.length}\r\n\r\n`
         respObj.resp += body
 
         return respObj
       }
 
-      routes[reqObj.method][route](reqObj, respObj)
+      // console.log(routes[reqObj.method][route])
+      await routes[reqObj.method][route](reqObj, respObj)
+
+      // console.log(respObj.resp)
       return respObj.resp
     }
   }

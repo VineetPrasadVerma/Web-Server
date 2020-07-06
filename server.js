@@ -19,7 +19,9 @@ server.on('connection', (socket) => {
 
   socket.on('data', async (data) => {
     // Request
+    // console.log(data.toString())
     const requestObject = requestParser(data)
+
     // Response
     // let res = await serveStaticFile(requestObject)
     // if (!res) {
@@ -35,7 +37,7 @@ server.on('connection', (socket) => {
     }
 
     console.log(requestObject)
-    console.log(res)
+    // console.log(res)
     socket.write(res)
   })
 
@@ -49,10 +51,12 @@ server.on('connection', (socket) => {
 })
 
 const app = {
-  listen: (port) => {
+  listen: (port, fun) => {
     server.listen(port, () => {
-      console.log('server is listening on port 8000')
+      console.log('server is listening on port 3000')
     })
+
+    fun()
   },
 
   use: (middleware) => {

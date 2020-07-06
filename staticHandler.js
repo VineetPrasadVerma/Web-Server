@@ -18,11 +18,13 @@ const serveStaticFile = async (requestObj, respObj) => {
     if (requestObj.method === 'GET') {
       if (requestObj.requestUri === '/') requestObj.requestUri = '/index.html'
       res =
-      'HTTP/1.1 200 OK\r\nAccess-Control-Allow-Origin: *\r\nAccess-Control-Allow-Headers: Origin, Content-Type, Accept\r\n'
+        'HTTP/1.1 200 OK\r\nAccess-Control-Allow-Origin: *\r\nAccess-Control-Allow-Headers: Origin, Content-Type, Accept\r\n'
       const date = new Date()
       res += `Date: ${date.toUTCString()}\r\n`
-      res += `Content-Type: ${contentType[path.extname(requestObj.requestUri)]}\r\n`
-      const body = await fs.readFile(`./public/${requestObj.requestUri}`)
+      res += `Content-Type: ${
+        contentType[path.extname(requestObj.requestUri)]
+      }\r\n`
+      const body = await fs.readFile(`./public${requestObj.requestUri}`)
       res += `Content-Length: ${body.length}\r\n\r\n`
       res += body
 
@@ -30,7 +32,7 @@ const serveStaticFile = async (requestObj, respObj) => {
     }
     return null
   } catch (err) {
-    console.log('Catch here', err)
+    // console.log('Catch here', err)
     return null
   }
 }
