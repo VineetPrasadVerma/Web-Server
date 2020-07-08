@@ -7,8 +7,6 @@ const bodyParser = (reqObj, resObj, next) => {
   const contentType = reqObj.headers['Content-type']
 
   if (contentType === 'application/json') {
-    console.log(reqObj.body)
-    console.log(JSON.parse(reqObj.body))
     reqObj.body = JSON.parse(reqObj.body)
   }
 

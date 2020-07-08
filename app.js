@@ -5,7 +5,7 @@ const { serveStaticFile } = require('./staticHandler')
 app.use(bodyParser)
 app.use(serveStaticFile)
 
-app.listen(8000)
+app.listen(3000, () => {})
 
 app.get('/tasks', (req, res) => {
   console.log('From App', req.params, req.queryParams)

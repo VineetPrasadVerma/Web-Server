@@ -1,7 +1,7 @@
 const net = require('net')
 const { requestParser } = require('./requestParser')
 const { routeHandler } = require('./routeHandler')
-const { errorResponse } = require('./errorResponse')
+const { errorResponse } = require('./response')
 
 const server = net.createServer()
 
@@ -19,25 +19,14 @@ server.on('connection', (socket) => {
 
   socket.on('data', async (data) => {
     // Request
-    // console.log(data.toString())
     const requestObject = requestParser(data)
 
     // Response
-    // let res = await serveStaticFile(requestObject)
-    // if (!res) {
-    //   res = await routeHandler(requestObject, routes, middlewares)
-    //   if (!res) {
-    //     res = await errorResponse()
-    //   }
-    // }
-
     let res = await routeHandler(requestObject, routes, middlewares)
     if (!res) {
       res = await errorResponse()
     }
 
-    console.log(requestObject)
-    // console.log(res)
     socket.write(res)
   })
 
@@ -53,7 +42,7 @@ server.on('connection', (socket) => {
 const app = {
   listen: (port, fun) => {
     server.listen(port, () => {
-      console.log('server is listening on port 3000')
+      console.log(`Server is listening on port ${port}`)
     })
 
     fun()
