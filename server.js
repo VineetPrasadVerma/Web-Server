@@ -19,8 +19,10 @@ server.on('connection', (socket) => {
 
   socket.on('data', async (data) => {
     // Request
+    console.log(data.toString())
     const requestObject = requestParser(data)
 
+    console.log('There', requestObject)
     // Response
     let res = await routeHandler(requestObject, routes, middlewares)
     if (!res) {

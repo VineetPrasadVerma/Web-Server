@@ -7,7 +7,7 @@ const errorResponse = async () => {
     const date = new Date()
     res += `Date: ${date.toUTCString()}\r\n`
     res += 'Content-Type: text/html\r\n'
-    const body = await fs.readFile('../error.html')
+    const body = await fs.readFile('./error.html')
     res += `Content-Length: ${body.length}\r\n\r\n`
     res += body
 
