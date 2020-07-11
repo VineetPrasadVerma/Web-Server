@@ -46,6 +46,7 @@ server.on('connection', (socket) => {
       // Response
       requestObject.body = body.toString()
       let res = await routeHandler(requestObject, routes, middlewares)
+      console.log(requestObject)
       if (!res) {
         res = await errorResponse()
       }

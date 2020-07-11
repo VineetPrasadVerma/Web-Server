@@ -31,19 +31,17 @@ const bodyParser = async (reqObj, resObj, next) => {
     const body = {}
     const boundary = `--${contentType.split('; boundary=')[1]}`
     const bodyParts = reqObj.body.split(boundary).slice(1, -1)
-    // console.log(bodyParts)
     for (const part of bodyParts) {
       const [headers, data] = part.split(/\r\n\r\n/)
-      const headerArray = headers.split(/;|\r\n/)
+      const headerArray = headers.split(/;|\r\n/).slice(1)
 
       const headersObj = {}
       for (const item of headerArray) {
         const [key, value] = item.split(/:|=/)
-        headersObj[key.trim()] = value
+        headersObj[key.trim()] = value.trim('"')
       }
 
-      // console.log(headersObj)
-      if (headersObj.filename) {
+      if (headersObj.filename && headersObj.filename !== '""') {
         try {
           await fs.writeFile(`./upload/${headersObj.filename.slice(1, -1)}`, data)
         } catch (err) {
@@ -51,7 +49,7 @@ const bodyParser = async (reqObj, resObj, next) => {
           return null
         }
       } else {
-        Object.assign(body, { [headersObj.name.slice(1, -1)]: data })
+        Object.assign(body, { [headersObj.name.slice(1, -1)]: data.replace(/\r\n/, '') })
       }
     }
 
