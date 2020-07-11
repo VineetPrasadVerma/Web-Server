@@ -17,19 +17,40 @@ server.on('connection', (socket) => {
   const remoteAddress = `${socket.remoteAddress} : ${socket.remotePort}`
   console.log('New client connected on ', remoteAddress)
 
-  socket.on('data', async (data) => {
-    // Request
-    console.log(data.toString())
-    const requestObject = requestParser(data)
+  let requestString
+  let flag = false
+  let body
+  let requestObject
 
-    console.log('There', requestObject)
-    // Response
-    let res = await routeHandler(requestObject, routes, middlewares)
-    if (!res) {
-      res = await errorResponse()
+  socket.on('data', async (data) => {
+    if (!flag) {
+      requestString = data.toString()
+      const requestLineAndHeaders = requestString.split(/\r\n\r\n/)[0]
+      requestObject = requestParser(requestLineAndHeaders)
+      body = data.slice(data.indexOf('\r\n\r\n') + 4)
+      data = Buffer.from('')
+      flag = true
     }
 
-    socket.write(res)
+    // Response
+    if (!requestObject.headers['Content-Length']) {
+      let res = await routeHandler(requestObject, routes, middlewares)
+      if (!res) {
+        res = await errorResponse()
+      }
+      return socket.end(res)
+    }
+
+    body = Buffer.concat([body, data])
+    if (Number(requestObject.headers['Content-Length']) === body.byteLength) {
+      // Response
+      requestObject.body = body.toString()
+      let res = await routeHandler(requestObject, routes, middlewares)
+      if (!res) {
+        res = await errorResponse()
+      }
+      return socket.end(res)
+    }
   })
 
   socket.once('close', () => {

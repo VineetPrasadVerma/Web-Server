@@ -21,3 +21,8 @@ app.get('/tasks/:id/subtasks/:id2', (req, res) => {
   console.log('From App', req.params, req.queryParams)
   res.status(200).send('A subtask of a task')
 })
+
+app.post('/upload', (req, res) => {
+  console.log('File Uploaded')
+  res.status(200).send('File Uploaded')
+})

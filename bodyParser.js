@@ -1,12 +1,12 @@
-const fs = require('fs')
+const fs = require('fs').promises
 
-const bodyParser = (reqObj, resObj, next) => {
+const bodyParser = async (reqObj, resObj, next) => {
   if (!reqObj.body) {
     reqObj.body = {}
     return undefined
   }
 
-  const contentType = reqObj.headers['Content-type']
+  const contentType = reqObj.headers['Content-Type']
 
   if (contentType === 'application/json') {
     reqObj.body = JSON.parse(reqObj.body)
@@ -31,7 +31,7 @@ const bodyParser = (reqObj, resObj, next) => {
     const body = {}
     const boundary = `--${contentType.split('; boundary=')[1]}`
     const bodyParts = reqObj.body.split(boundary).slice(1, -1)
-
+    // console.log(bodyParts)
     for (const part of bodyParts) {
       const [headers, data] = part.split(/\r\n\r\n/)
       const headerArray = headers.split(/;|\r\n/)
@@ -39,13 +39,19 @@ const bodyParser = (reqObj, resObj, next) => {
       const headersObj = {}
       for (const item of headerArray) {
         const [key, value] = item.split(/:|=/)
-        headersObj[key] = value
+        headersObj[key.trim()] = value
       }
 
+      // console.log(headersObj)
       if (headersObj.filename) {
-        fs.writeFile(`./upload/${headersObj.filename}`, data, (err) => { console.log(err) })
+        try {
+          await fs.writeFile(`./upload/${headersObj.filename.slice(1, -1)}`, data)
+        } catch (err) {
+          console.log(err)
+          return null
+        }
       } else {
-        Object.assign(body, { [headersObj.filename]: data })
+        Object.assign(body, { [headersObj.name.slice(1, -1)]: data })
       }
     }
 

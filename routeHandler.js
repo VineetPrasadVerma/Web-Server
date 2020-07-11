@@ -41,6 +41,7 @@ const routeHandler = async (reqObj, routes, middlewares) => {
     reqObj.params = {}
     return null
   } catch (err) {
+    console.log(err)
     return null
   }
 }

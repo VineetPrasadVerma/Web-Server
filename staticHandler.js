@@ -32,6 +32,7 @@ const serveStaticFile = async (requestObj, respObj) => {
     }
     return null
   } catch (err) {
+    console.log(err)
     return null
   }
 }
