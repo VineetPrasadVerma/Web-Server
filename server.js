@@ -44,7 +44,7 @@ server.on('connection', (socket) => {
     body = Buffer.concat([body, data])
     if (Number(requestObject.headers['Content-Length']) === body.byteLength) {
       // Response
-      requestObject.body = body.toString()
+      requestObject.body = body
       let res = await routeHandler(requestObject, routes, middlewares)
       console.log(requestObject)
       if (!res) {

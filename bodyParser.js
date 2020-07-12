@@ -9,7 +9,7 @@ const bodyParser = async (reqObj, resObj, next) => {
   const contentType = reqObj.headers['Content-Type']
 
   if (contentType === 'application/json') {
-    reqObj.body = JSON.parse(reqObj.body)
+    reqObj.body = JSON.parse(reqObj.body.toString())
   }
 
   if (contentType === 'text/plain') {
@@ -18,7 +18,7 @@ const bodyParser = async (reqObj, resObj, next) => {
 
   if (contentType === 'application/x-www-form-urlencoded') {
     const body = {}
-    const formData = reqObj.body.split('&')
+    const formData = reqObj.body.toString().split('&')
     for (const data of formData) {
       const [key, value] = data.split('=')
       body[key] = value
@@ -30,7 +30,8 @@ const bodyParser = async (reqObj, resObj, next) => {
   if (contentType.startsWith('multipart/form-data')) {
     const body = {}
     const boundary = `--${contentType.split('; boundary=')[1]}`
-    const bodyParts = reqObj.body.split(boundary).slice(1, -1)
+    const bodyParts = reqObj.body.toString('binary').split(boundary).slice(1, -1)
+    // console.log(bodyParts)
     for (const part of bodyParts) {
       const [headers, data] = part.split(/\r\n\r\n/)
       const headerArray = headers.split(/;|\r\n/).slice(1)
@@ -43,7 +44,8 @@ const bodyParser = async (reqObj, resObj, next) => {
 
       if (headersObj.filename && headersObj.filename !== '""') {
         try {
-          await fs.writeFile(`./upload/${headersObj.filename.slice(1, -1)}`, data)
+          // console.log(Buffer.from(data))
+          await fs.writeFile(`./upload/${headersObj.filename.slice(1, -1)}`, Buffer.from(data, 'binary'))
         } catch (err) {
           console.log(err)
           return null
