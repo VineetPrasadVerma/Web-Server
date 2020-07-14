@@ -35,6 +35,9 @@ server.on('connection', (socket) => {
     // Response
     if (!requestObject.headers['Content-Length']) {
       let res = await routeHandler(requestObject, routes, middlewares)
+      console.log(requestObject)
+
+      console.log(res)
       if (!res) {
         res = await errorResponse()
       }

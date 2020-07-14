@@ -1,10 +1,11 @@
-const { status, send } = require('./response')
+const { status, send, cookie } = require('./response')
 
 const routeHandler = async (reqObj, routes, middlewares) => {
+  const respObj = { status, send, cookie }
   reqObj.params = {}
   try {
     for (const middleware of middlewares) {
-      const response = await middleware(reqObj, {}, () => {})
+      const response = await middleware(reqObj, respObj, () => {})
       if (response) return response
     }
 
@@ -31,7 +32,6 @@ const routeHandler = async (reqObj, routes, middlewares) => {
         }
 
         if (!flag) {
-          const respObj = { status, send }
           await routes[reqObj.method][route](reqObj, respObj)
           return respObj.resp
         }

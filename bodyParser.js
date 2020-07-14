@@ -30,7 +30,10 @@ const bodyParser = async (reqObj, resObj, next) => {
   if (contentType.startsWith('multipart/form-data')) {
     const body = {}
     const boundary = `--${contentType.split('; boundary=')[1]}`
-    const bodyParts = reqObj.body.toString('binary').split(boundary).slice(1, -1)
+    const bodyParts = reqObj.body
+      .toString('binary')
+      .split(boundary)
+      .slice(1, -1)
     // console.log(bodyParts)
     for (const part of bodyParts) {
       const [headers, data] = part.split(/\r\n\r\n/)
@@ -45,13 +48,18 @@ const bodyParser = async (reqObj, resObj, next) => {
       if (headersObj.filename && headersObj.filename !== '""') {
         try {
           // console.log(Buffer.from(data))
-          await fs.writeFile(`./upload/${headersObj.filename.slice(1, -1)}`, Buffer.from(data, 'binary'))
+          await fs.writeFile(
+            `./upload/${headersObj.filename.slice(1, -1)}`,
+            Buffer.from(data, 'binary')
+          )
         } catch (err) {
           console.log(err)
           return null
         }
       } else {
-        Object.assign(body, { [headersObj.name.slice(1, -1)]: data.replace(/\r\n/, '') })
+        Object.assign(body, {
+          [headersObj.name.slice(1, -1)]: data.replace(/\r\n/, '')
+        })
       }
     }
 
