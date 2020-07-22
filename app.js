@@ -12,7 +12,7 @@ app.listen(3000, () => {})
 app.get('/tasks', (req, res) => {
   // console.log('From App', req.params, req.queryParams, req.Cookie)
   // res.cookie('vikas', 'brother')
-  // res.cookie('name', 'vineet', { expires: new Date(Date.now() + 3600000) })
+  res.cookie('name', 'vineet', { expires: new Date(Date.now() + 60000) })
   res.status(200).send('All the tasks')
 })
 
